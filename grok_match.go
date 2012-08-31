@@ -20,21 +20,7 @@ import (
 	"unsafe"
 )
 
-const (
-	MAX_GROK_CAPTURE_MATCHES = 1024
-)
-
-type GrokCaptures struct {
-	Number   int
-	Captures []GrokCapture
-}
-
-type GrokCapture struct {
-	Name    string
-	Pattern string
-}
-
-func GetCaptures() (ret GrokCaptures) {
+func GetCaptures() (ret map[string]string) {
 	var gm C.grok_match_obj
 	C.grok_match_walk_init(gm)
 
@@ -45,22 +31,12 @@ func GetCaptures() (ret GrokCaptures) {
 	defer C.free(unsafe.Pointer(data_ptr))
 	var datalen_ptr C.int
 
-	ret = GrokCaptures{}
-	items := make([]GrokCapture, MAX_GROK_CAPTURE_MATCHES)
+	ret = map[string]string{}
 
-	var i int
-
-	i = 0
 	for int(C.grok_match_walk_next(gm, &name_ptr, &namelen_ptr, &data_ptr, &datalen_ptr)) == GROK_OK {
-		items[i] = GrokCapture{
-			Name:    C.GoString(name_ptr)[0:namelen_ptr],
-			Pattern: C.GoString(data_ptr)[0:datalen_ptr],
-		}
-		i++
+		ret[C.GoString(name_ptr)[0:namelen_ptr]] = C.GoString(data_ptr)[0:datalen_ptr]
 	}
 	C.grok_match_walk_end(gm)
 
-	ret.Number = i
-	ret.Captures = items
 	return
 }
