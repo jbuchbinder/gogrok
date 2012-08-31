@@ -16,6 +16,11 @@ import (
 	"os"
 )
 
+// A grok pile is an easy way to have multiple patterns together so
+// that you can try to match against each one.
+// The API provided should be similar to the normal Grok
+// interface, but you can compile multiple patterns and match will
+// try each one until a match is found.
 type Pile struct {
 	Groks        []Grok
 	Patterns     map[string]string
