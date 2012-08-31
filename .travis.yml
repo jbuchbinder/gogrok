@@ -1,3 +1,4 @@
 language: go
 install:
-  - sudo apt-get install libgrok-dev
+  - sudo add-apt-repository -y ppa:rufustfirefly/ppa
+  - sudo apt-get install -y libgrok-dev
